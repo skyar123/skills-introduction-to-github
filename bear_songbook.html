@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Bear Songbook — Songs for Social-Emotional Learning</title>
+<style>
+  /* Base */
+  *,*::before,*::after{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;line-height:1.6;color:#2c3e50;background:linear-gradient(135deg,#fff5eb 0%,#ffe0cc 100%);min-height:100vh}
+  a{color:#8b4513;text-decoration:none;font-weight:600}
+  a:hover{text-decoration:underline}
+  .sr-only{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0,0,1px,1px)}
+  :focus-visible{outline:3px solid #4a90a4;outline-offset:2px;border-radius:6px}
+  @media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+
+  /* Layout */
+  .container{max-width:1200px;margin:0 auto;padding:20px}
+  header{text-align:center;background:white;border-radius:20px;padding:30px 20px;margin-bottom:24px;box-shadow:0 4px 20px rgba(0,0,0,.08)}
+  .title{margin:0 0 8px;color:#8b4513;font-size:2.2rem;font-weight:700}
+  .subtitle{margin:0 0 10px;color:#654321;font-size:1.1rem}
+  .intro{max-width:800px;margin:16px auto 0;color:#5d4e37;line-height:1.7}
+  .intro strong{color:#8b4513}
+
+  /* Quick Start Banner */
+  .quick-start{background:#fff9ed;border:2px solid #f5b85a;border-radius:15px;padding:20px;margin:20px 0;text-align:left}
+  .quick-start h2{color:#8b4513;margin:0 0 12px;font-size:1.3rem}
+  .quick-start-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-top:12px}
+  .quick-btn{background:white;border:2px solid #8b4513;border-radius:10px;padding:12px;text-align:center;cursor:pointer;transition:.2s}
+  .quick-btn:hover{background:#8b4513;color:white;transform:translateY(-2px)}
+  .quick-btn .emoji{font-size:1.5rem;display:block;margin-bottom:4px}
+  .quick-btn .label{font-weight:600;font-size:0.95rem}
+
+  /* Controls */
+  .toolbar{display:grid;grid-template-columns:1fr;gap:12px;margin:20px 0}
+  .filter{background:white;border-radius:12px;padding:16px;box-shadow:0 2px 10px rgba(0,0,0,.06)}
+  .filter-row{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+  .filter-row:last-child{margin-bottom:0}
+  .filter label{font-weight:600;color:#654321;min-width:80px}
+  select,.search-input{padding:10px 14px;border:2px solid #deb887;border-radius:8px;font-size:16px;background:white;flex:1;min-width:150px}
+  .search-input{width:100%}
+  select:focus,.search-input:focus{outline:none;border-color:#8b4513;box-shadow:0 0 0 3px rgba(139,69,19,.15)}
+  .search-help{font-size:0.85rem;color:#6b5a42;margin-top:8px;font-style:italic}
+
+  /* Nav (Age Groups) */
+  .navigation{background:white;border-radius:15px;padding:20px;margin:20px 0;box-shadow:0 2px 10px rgba(0,0,0,.06)}
+  .nav-title{color:#8b4513;font-size:1.1rem;font-weight:700;margin:0 0 12px;text-align:center}
+  .nav-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}
+  .nav-btn{background:linear-gradient(135deg,#ffeaa7,#fdcb6e);color:#654321;padding:14px 10px;border:2px solid transparent;border-radius:12px;cursor:pointer;font-weight:600;text-align:center;transition:.2s;font-size:0.95rem}
+  .nav-btn:hover{background:linear-gradient(135deg,#fdcb6e,#f39c12);transform:translateY(-2px)}
+  .nav-btn[aria-current="true"]{background:#8b4513;color:white;border-color:#654321}
+  .nav-btn .age-label{display:block;font-size:0.85rem;font-weight:400;opacity:0.9;margin-top:2px}
+
+  /* Sections */
+  .section{display:none;background:white;border-radius:20px;padding:28px;margin-bottom:24px;box-shadow:0 4px 20px rgba(0,0,0,.06)}
+  .section.active{display:block;animation:fadeIn .3s ease}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+  .section-title{font-size:1.8rem;color:#8b4513;border-bottom:3px solid #ffeaa7;padding-bottom:12px;margin:0 0 20px}
+  .age-info{background:linear-gradient(135deg,#fff9ed,#fff5e6);border-left:5px solid #f5b85a;padding:16px;margin-bottom:20px;border-radius:0 12px 12px 0}
+  .age-info h3{margin:0 0 8px;color:#8b4513;font-size:1.1rem}
+  .age-info p{margin:4px 0;color:#654321}
+
+  /* Quick Reference Cards */
+  .quick-index{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin-bottom:20px}
+  .index-item{background:white;border-radius:12px;padding:16px;box-shadow:0 2px 8px rgba(0,0,0,.06);border-top:4px solid #f5b85a;transition:.2s}
+  .index-item:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,.1)}
+  .index-title{font-weight:700;color:#8b4513;margin-bottom:10px;font-size:1.05rem}
+  .index-songs{line-height:1.8}
+  .index-songs a{color:#654321;display:block;padding:2px 0}
+  .index-songs a:hover{color:#8b4513}
+
+  /* Song Cards */
+  .song-card{background:white;border-radius:16px;padding:20px;margin:16px 0;box-shadow:0 2px 12px rgba(0,0,0,.06);border-left:5px solid #8b4513;transition:.2s}
+  .song-card:hover{transform:translateX(2px);box-shadow:0 4px 16px rgba(0,0,0,.08)}
+  .song-header{display:flex;justify-content:space-between;align-items:start;flex-wrap:wrap;gap:12px;margin-bottom:12px}
+  .song-title{font-size:1.25rem;color:#8b4513;margin:0;font-weight:700;flex:1}
+  .song-age-badge{background:#f5b85a;color:white;padding:4px 12px;border-radius:20px;font-size:0.85rem;font-weight:600}
+  .song-description{background:#f9f9f9;padding:12px;border-radius:8px;margin:12px 0;font-style:italic;color:#5d4e37}
+
+  /* Milestone Box */
+  .milestone-box{background:linear-gradient(135deg,#e8f5e9,#f1f8e9);border:2px solid #81c784;border-radius:10px;padding:14px;margin:12px 0}
+  .milestone-box h4{margin:0 0 8px;color:#388e3c;font-size:0.95rem;text-transform:uppercase;letter-spacing:0.5px}
+  .milestone-list{display:flex;flex-wrap:wrap;gap:8px;margin:0}
+  .milestone-item{background:white;padding:4px 10px;border-radius:15px;font-size:0.9rem;color:#2e7d32;border:1px solid #a5d6a7}
+
+  /* Tags */
+  .song-tags{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+  .tag{padding:5px 12px;border-radius:20px;font-size:0.85rem;font-weight:600}
+  .tag-sensory{background:#ffeaa7;color:#795548}
+  .tag-language{background:#e8eaf6;color:#3f51b5}
+  .tag-emotional{background:#ffe0e0;color:#c62828}
+  .tag-movement{background:#e0f2f1;color:#00695c}
+  .tag-social{background:#f3e5f5;color:#6a1b9a}
+
+  /* Language Badge */
+  .badge-lang{background:#eceff1;color:#37474f;border-radius:12px;padding:2px 8px;font-size:.75rem;font-weight:700;margin-left:8px}
+  .empty-state{background:#fff3cd;border:2px solid:#ffeeba;color:#856404;border-radius:10px;padding:16px;margin:16px 0;text-align:center}
+
+  /* Action Buttons */
+  .action-row{display:flex;flex-wrap:wrap;gap:10px;margin:12px 0}
+  .action-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:25px;font-weight:600;font-size:0.9rem;border:2px solid;transition:.2s;cursor:pointer;background:white}
+  .btn-video{color:#ff6b6b;border-color:#ff6b6b}
+  .btn-video:hover{background:#ff6b6b;color:white}
+  .btn-print{color:#4ecdc4;border-color:#4ecdc4}
+  .btn-print:hover{background:#4ecdc4;color:white}
+  .btn-lyrics{color:#95a5a6;border-color:#95a5a6}
+  .btn-lyrics:hover{background:#95a5a6;color:white}
+
+  /* Lyrics Accordion */
+  details.lyrics{border:2px solid #deb887;border-radius:10px;background:#fffaf5;padding:12px;margin-top:12px}
+  details.lyrics[open]{background:#fff7ed}
+  details.lyrics summary{cursor:pointer;font-weight:700;color:#8b4513;list-style:none;padding:4px 0}
+  details.lyrics summary::-webkit-details-marker{display:none}
+  details.lyrics summary::before{content:"▶ ";display:inline-block;transition:.2s}
+  details.lyrics[open] summary::before{transform:rotate(90deg)}
+  .lyrics-content{margin-top:12px;padding:12px;background:white;border-radius:6px;font-family:Georgia, serif;line-height:1.8}
+
+  /* Implementation Notes */
+  .implementation-card{background:#f0f9ff;border:2px solid #60a5fa;border-radius:12px;padding:16px;margin:16px 0}
+  .implementation-card h4{color:#1e40af;margin:0 0 8px;font-size:1.05rem}
+  .implementation-card ul{margin:8px 0;padding-left:24px}
+  .implementation-card li{margin:4px 0;color:#334155}
+
+  /* Alerts */
+  .alert{padding:12px 16px;border-radius:8px;margin:12px 0}
+  .alert-info{background:#e3f2fd;border-left:4px solid #2196f3;color:#0d47a1}
+  .alert-safety{background:#fff3e0;border-left:4px solid #ff9800;color:#e65100}
+
+  /* Responsive */
+  @media (max-width:768px){
+    .title{font-size:1.8rem}
+    .nav-grid{grid-template-columns:1fr}
+    .quick-index{grid-template-columns:1fr}
+    .filter-row{flex-direction:column;align-items:stretch}
+    .filter label{min-width:auto}
+    .song-header{flex-direction:column}
+  }
+
+  /* Print Styles */
+  @media print{
+    body{background:white}
+    .toolbar,.navigation,.action-btn,.quick-start{display:none}
+    .song-card{page-break-inside:avoid}
+  }
+
+  /* Search Highlight */
+  .highlight{background:#fff59d;padding:1px 3px;border-radius:3px}
+  .no-results{background:#ffebee;border:2px solid:#ef5350;color:#c62828;border-radius:10px;padding:16px;margin:16px 0;text-align:center}
+</style>
+</head>
+<body>
+<a class="sr-only" href="#main">Skip to main content</a>
+<div class="container">
+  <header>
+    <h1 class="title">Bear Songbook</h1>
+    <p class="subtitle">Emotionally Responsive Practice (ERP) • Birth to 5</p>
+    <div class="intro">
+      <strong>For Teachers & Parents:</strong> Bear‑themed songs to support ERP milestones: reciprocity, regulation, and repair. Each song includes milestones, adaptations, and links to lyrics/videos where possible.
+    </div>
+  </header>
+
+  <!-- Quick Start -->
+  <div class="quick-start">
+    <h2 id="quick-start-title">What Do You Need Right Now?</h2>
+    <div class="quick-start-grid">
+      <button class="quick-btn" data-qf="calming"><span class="emoji">😴</span><span class="label" data-t="qf_calm">Calm Down</span></button>
+      <button class="quick-btn" data-qf="morning"><span class="emoji">☀️</span><span class="label" data-t="qf_morning">Morning Arrival</span></button>
+      <button class="quick-btn" data-qf="feelings"><span class="emoji">😊😢</span><span class="label" data-t="qf_feelings">Big Feelings</span></button>
+      <button class="quick-btn" data-qf="movement"><span class="emoji">🏃</span><span class="label" data-t="qf_movement">Get Moving</span></button>
+      <button class="quick-btn" data-qf="bedtime"><span class="emoji">🌙</span><span class="label" data-t="qf_bedtime">Bedtime</span></button>
+      <button class="quick-btn" data-qf="group"><span class="emoji">👫</span><span class="label" data-t="qf_group">Group Activities</span></button>
+    </div>
+  </div>
+
+  <!-- Search & Filter -->
+  <div class="toolbar">
+    <div class="filter" role="search">
+      <div class="filter-row">
+        <label for="searchInput" data-t="search_label">Search:</label>
+        <input id="searchInput" class="search-input" type="text" placeholder="Type a word: bear, hug, sleep, counting..." data-t-placeholder="search_placeholder" aria-describedby="searchHelp" />
+      </div>
+      <div id="searchHelp" class="search-help" data-t="search_help">Try searching for activities (jumping), emotions (calm), or times of day (bedtime).</div>
+      <div id="resultsStatus" class="sr-only" role="status" aria-live="polite"></div>
+    </div>
+
+    <div class="filter">
+      <div class="filter-row">
+        <label for="purposeFilter" data-t="purpose_label">Purpose:</label>
+        <select id="purposeFilter">
+          <option value="all" data-t="purpose_all">All Activities</option>
+          <option value="calming" data-t="purpose_calming">Calming / Quiet Time</option>
+          <option value="energizing" data-t="purpose_energizing">Energizing / Movement</option>
+          <option value="social" data-t="purpose_social">Social Skills / Cooperation</option>
+          <option value="learning" data-t="purpose_learning">Learning Concepts</option>
+          <option value="emotional" data-t="purpose_emotional">Emotional Expression</option>
+        </select>
+
+        <label for="langFilter" data-t="lang_label">Language:</label>
+        <select id="langFilter">
+          <option value="all" data-t="lang_all">All Languages</option>
+          <option value="en" data-t="lang_en">English</option>
+          <option value="es" data-t="lang_es">Spanish / Español</option>
+          <option value="bilingual" data-t="lang_bilingual">Bilingual (EN/ES)</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Language Mode Toggle -->
+    <div class="filter" aria-label="Language Mode">
+      <div class="filter-row">
+        <label for="uiLang" data-t="ui_lang_label">App Language:</label>
+        <select id="uiLang">
+          <option value="en">English (UI)</option>
+          <option value="es">Español (UI)</option>
+        </select>
+
+        <label for="songLang" data-t="song_lang_label">Song Language Filter:</label>
+        <select id="songLang">
+          <option value="all" data-t="song_lang_all">Show All</option>
+          <option value="en" data-t="song_lang_en">English only</option>
+          <option value="es" data-t="song_lang_es">Spanish only</option>
+        </select>
+      </div>
+      <div id="langNotice" class="alert alert-info" style="display:none"></div>
+    </div>
+  </div>
+
+  <!-- Age Navigation -->
+  <nav class="navigation" role="tablist" aria-label="Age Groups">
+    <div class="nav-title" data-t="nav_title">Choose Age Group:</div>
+    <div class="nav-grid" id="ageTabs">
+      <button class="nav-btn" role="tab" aria-controls="quick-index" aria-selected="true" aria-current="true">
+        <span data-t="allSongs">All Songs</span> <span class="age-label" data-t="nav_quick_ref">Quick Reference</span>
+      </button>
+      <button class="nav-btn" role="tab" aria-controls="infants" aria-selected="false">
+        <span data-t="babies">Babies</span> <span class="age-label">0-12 months</span>
+      </button>
+      <button class="nav-btn" role="tab" aria-controls="young-toddlers" aria-selected="false">
+        <span data-t="young">Young Toddlers</span> <span class="age-label">12-24 months</span>
+      </button>
+      <button class="nav-btn" role="tab" aria-controls="older-toddlers" aria-selected="false">
+        <span data-t="older">Older Toddlers</span> <span class="age-label">2-3 years</span>
+      </button>
+      <button class="nav-btn" role="tab" aria-controls="preschool" aria-selected="false">
+        <span data-t="preschool">Preschoolers</span> <span class="age-label">3-5 years</span>
+      </button>
+      <button class="nav-btn" role="tab" aria-controls="implementation" aria-selected="false">
+        <span data-t="guide">Teacher Tips</span> <span class="age-label" data-t="nav_how_to">How to Use</span>
+      </button>
+    </div>
+  </nav>
+
+  <main id="main">
+    <!-- Quick Index -->
+    <section class="section active" id="quick-index" role="region" aria-labelledby="quick-index-title">
+      <h2 id="quick-index-title" class="section-title" data-t="allSongs">All Songs by Activity Type</h2>
+      <div class="quick-index" id="quickIndex"></div>
+    </section>
+
+    <!-- Infants -->
+    <section class="section" id="infants" role="region" aria-labelledby="infants-title">
+      <h2 id="infants-title" class="section-title" data-t="babies">Babies (0-12 months)</h2>
+      <div id="infantsList"></div>
+    </section>
+
+    <!-- Young Toddlers -->
+    <section class="section" id="young-toddlers" role="region" aria-labelledby="young-toddlers-title">
+      <h2 id="young-toddlers-title" class="section-title" data-t="young">Young Toddlers (12-24 months)</h2>
+      <div id="youngList"></div>
+    </section>
+
+    <!-- Older Toddlers -->
+    <section class="section" id="older-toddlers" role="region" aria-labelledby="older-toddlers-title">
+      <h2 id="older-toddlers-title" class="section-title" data-t="older">Older Toddlers (2-3 years)</h2>
+      <div id="olderList"></div>
+    </section>
+
+    <!-- Preschool -->
+    <section class="section" id="preschool" role="region" aria-labelledby="preschool-title">
+      <h2 id="preschool-title" class="section-title" data-t="preschool">Preschoolers (3-5 years)</h2>
+      <div id="preschoolList"></div>
+    </section>
+
+    <!-- Implementation Guide -->
+    <section class="section" id="implementation" role="region" aria-labelledby="implementation-title">
+      <h2 id="implementation-title" class="section-title" data-t="guide">Teacher & Parent Guide</h2>
+      <div class="implementation-card">
+        <h4>For Fragile Infants (NICU Graduates, Sensory Sensitivities)</h4>
+        <ul>
+          <li>Start with humming before adding words</li>
+          <li>Keep volume very low (whisper singing)</li>
+          <li>Watch for overstimulation signs: looking away, arching back, fussing</li>
+          <li>One sensory input at a time (just voice, no movement initially)</li>
+        </ul>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script>
+/* =================== I18N =================== */
+const I18N = {
+  en: {
+    title: "Bear Songbook",
+    subtitle: "Emotionally Responsive Practice (ERP) • Birth to 5",
+    allSongs: "All Songs by Activity Type",
+    babies: "Babies",
+    young: "Young Toddlers",
+    older: "Older Toddlers",
+    preschool: "Preschoolers",
+    guide: "Teacher & Parent Guide",
+    watchVideo: "Watch Video",
+    showLyrics: "Show sample lyrics",
+    noSongsMsg: "No songs match this filter yet. Try a different filter or select 'Show All'.",
+    esBanner: "UI is in Spanish. Many linked videos/lyrics may still be in English until Spanish sources are added.",
+    erp_milestones: "ERP Milestones",
+    nav_title: "Choose Age Group:",
+    nav_quick_ref: "Quick Reference",
+    nav_how_to: "How to Use",
+    search_label: "Search:",
+    search_placeholder: "Type a word: bear, hug, sleep, counting...",
+    search_help: "Try searching for activities (jumping), emotions (calm), or times of day (bedtime).",
+    purpose_label: "Purpose:",
+    purpose_all: "All Activities",
+    purpose_calming: "Calming / Quiet Time",
+    purpose_energizing: "Energizing / Movement",
+    purpose_social: "Social Skills / Cooperation",
+    purpose_learning: "Learning Concepts",
+    purpose_emotional: "Emotional Expression",
+    lang_label: "Language:",
+    lang_all: "All Languages",
+    lang_en: "English",
+    lang_es: "Spanish / Español",
+    lang_bilingual: "Bilingual (EN/ES)",
+    ui_lang_label: "App Language:",
+    song_lang_label: "Song Language Filter:",
+    song_lang_all: "Show All",
+    song_lang_en: "English only",
+    song_lang_es: "Spanish only",
+    "quick-start-title": "What Do You Need Right Now?",
+    qf_calm: "Calm Down",
+    qf_morning: "Morning Arrival",
+    qf_feelings: "Big Feelings",
+    qf_movement: "Get Moving",
+    qf_bedtime: "Bedtime",
+    qf_group: "Group Activities",
+  },
+  es: {
+    title: "Cancionero de Osos",
+    subtitle: "Práctica Emocionalmente Responsiva (ERP) • 0 a 5 años",
+    allSongs: "Canciones por Tipo de Actividad",
+    babies: "Bebés",
+    young: "Niños Pequeños",
+    older: "Niños Mayores",
+    preschool: "Preescolares",
+    guide: "Guía para Maestros y Familias",
+    watchVideo: "Ver video",
+    showLyrics: "Mostrar letra",
+    noSongsMsg: "No hay canciones que coincidan con este filtro. Intenta cambiar el filtro o selecciona 'Mostrar Todo'.",
+    esBanner: "La interfaz está en español. Muchos videos o letras pueden estar en inglés.",
+    erp_milestones: "Hitos de ERP",
+    nav_title: "Elige Grupo de Edad:",
+    nav_quick_ref: "Referencia Rápida",
+    nav_how_to: "Cómo Usar",
+    search_label: "Buscar:",
+    search_placeholder: "Escribe una palabra: oso, abrazo, dormir...",
+    search_help: "Busca actividades (saltar), emociones (calma), o momentos del día (dormir).",
+    purpose_label: "Propósito:",
+    purpose_all: "Todas las Actividades",
+    purpose_calming: "Para Calmar / Relajarse",
+    purpose_energizing: "Para Moverse / Energizar",
+    purpose_social: "Habilidades Sociales",
+    purpose_learning: "Conceptos de Aprendizaje",
+    purpose_emotional: "Expresión Emocional",
+    lang_label: "Idioma:",
+    lang_all: "Todos los Idiomas",
+    lang_en: "Inglés",
+    lang_es: "Español",
+    lang_bilingual: "Bilingüe (EN/ES)",
+    ui_lang_label: "Idioma de la App:",
+    song_lang_label: "Filtro de Idioma (Canción):",
+    song_lang_all: "Mostrar Todo",
+    song_lang_en: "Solo en inglés",
+    song_lang_es: "Solo en español",
+    "quick-start-title": "¿Qué Necesitas Ahora Mismo?",
+    qf_calm: "Para Calmarse",
+    qf_morning: "Llegada en la Mañana",
+    qf_feelings: "Grandes Emociones",
+    qf_movement: "A Moverse",
+    qf_bedtime: "Hora de Dormir",
+    qf_group: "Actividades Grupales",
+  }
+};
+let UI_LANG = "en";
+let SONG_LANG_FILTER = "all";
+const t = (k)=> (I18N[UI_LANG] && I18N[UI_LANG][k]) || I18N.en[k] || k;
+
+/* =================== SONGS =================== */
+const SONGS = [
+  {
+    id: "hug-your-bear",
+    age: "infants",
+    lang: ["en"],
+    purpose: ["calming","emotional"],
+    tags: ["morning","bedtime","feelings","calming"],
+    links: [{label:"Video", url:"https://www.youtube.com/results?search_query=hug+your+bear+song", type:"video"}],
+    en: {
+      title: "Hug Your Bear",
+      ageLabel: "0-12 months",
+      milestones: ["Attachment", "Regulation of State", "Reciprocity"],
+      description: "Gentle squeezing song for comfort and bonding. Great for separation anxiety.",
+      lyrics: `Hug, hug, hug your bear
+Squeeze him very tight
+Hold him high and help him fly
+Then hug with all your might`
+    },
+    es: {
+      title: "Abraza a tu Oso",
+      ageLabel: "0-12 meses",
+      milestones: ["Apego", "Regulación del Estado", "Reciprocidad"],
+      description: "Canción suave con apretones para consuelo y crear vínculos. Ideal para la ansiedad por separación.",
+      lyrics: `Abraza, abraza a tu oso
+Apriétalo muy fuerte
+Sostenlo alto y ayúdalo a volar
+Luego abraza con todas tus fuerzas`
+    }
+  },
+  {
+    id: "bear-sleeping",
+    age: "infants",
+    lang: ["en","es","bilingual"],
+    purpose: ["calming"],
+    tags: ["bedtime","calming","quiet"],
+    links: [{label:"Melody Guide", url:"https://www.youtube.com/results?search_query=frere+jacques+melody", type:"video"}],
+    en: {
+      title: "Bear Is Sleeping",
+      ageLabel: "0-12 months",
+      milestones: ["Object Permanence", "Regulation of State"],
+      description: "Soft peekaboo lullaby (Frère Jacques tune). Add a Spanish verse for bilingual practice.",
+      lyrics: `Bear is sleeping, bear is sleeping
+In the cave, in the cave
+Shhh we must be quiet, shhh we must be quiet
+Time to rest, time to rest`
+    },
+    es: {
+      title: "El Oso Duerme",
+      ageLabel: "0-12 meses",
+      milestones: ["Permanencia del Objeto", "Regulación del Estado"],
+      description: "Suave canción de cuna (melodía de Frère Jacques). Ideal para práctica bilingüe.",
+      lyrics: `El oso está durmiendo, está durmiendo ya
+En su cueva, en su cueva
+Shhh hay que estar callados, shhh hay que estar callados
+A descansar, a descansar`
+    }
+  },
+  {
+    id: "teddy-turn",
+    age: "young-toddlers",
+    lang: ["en","es","bilingual"],
+    purpose: ["learning","energizing"],
+    tags: ["movement","following directions","transitions"],
+    links: [{label:"Video & Actions", url:"https://supersimple.com/song/teddy-bear-teddy-bear/", type:"video"}],
+    en: {
+      title: "Teddy Bear, Teddy Bear, Turn Around",
+      ageLabel: "12-24 months",
+      milestones: ["Locomotion", "Language Bridge"],
+      description: "Classic action rhyme. Use for transitions or getting wiggles out.",
+      lyrics: `Teddy Bear, Teddy Bear, turn around,
+Teddy Bear, Teddy Bear, touch the ground,
+Teddy Bear, Teddy Bear, reach up high,
+Teddy Bear, Teddy Bear, touch the sky.`
+    },
+    es: {
+      title: "Osito, Osito, Da la Vuelta",
+      ageLabel: "12-24 meses",
+      milestones: ["Locomoción", "Puente Lingüístico"],
+      description: "Rima de acción clásica. Úsala para transiciones o para liberar energía.",
+      lyrics: `Osito, osito, da la vuelta
+Osito, osito, toca el suelo
+Osito, osito, salta alto
+Osito, osito, toca el cielo.`
+    }
+  },
+  {
+    id: "bear-hunt",
+    age: "young-toddlers",
+    lang: ["en"],
+    purpose: ["energizing","learning"],
+    tags: ["movement","adventure","sounds","group"],
+    links: [{label:"Michael Rosen Video", url:"https://www.youtube.com/watch?v=0gyI6ykDwds", type:"video"}],
+    en: {
+      title: "Going on a Bear Hunt",
+      ageLabel: "12-24 months",
+      milestones: ["Locomotion", "Language Bridge", "Early Symbolic Play"],
+      description: "Adventure chant with movements and sounds. Great for burning energy!",
+      lyrics: `We're going on a bear hunt,
+We're gonna catch a big one,
+What a beautiful day!
+We're not scared...`
+    },
+    es: {
+      title: "Vamos a Cazar un Oso",
+      ageLabel: "12-24 meses",
+      milestones: ["Locomoción", "Puente Lingüístico", "Juego Simbólico Temprano"],
+      description: "Canto de aventura con movimientos y sonidos. ¡Ideal para quemar energía!",
+      lyrics: `Vamos a cazar un oso,
+Uno grande y peligroso,
+¡Qué día más hermoso!
+No tenemos miedo...`
+    }
+  },
+  {
+    id: "grizzly-grump",
+    age: "older-toddlers",
+    lang: ["en"],
+    purpose: ["emotional"],
+    tags: ["feelings","anger","self-regulation","movement"],
+    links: [{label:"Movement for Self-Regulation", url:"https://www.youtube.com/results?search_query=grizzly+bear+grump+song+regulation", type:"video"}],
+    en: {
+      title: "Grizzly Bear Grump",
+      ageLabel: "2-3 years",
+      milestones: ["Autonomy", "Integration of Positive & Negative Affect"],
+      description: "Express anger safely; stomp then breathe together.",
+      lyrics: `I'm a grizzly bear — GRUMP GRUMP GRUMP!
+When I feel mad I stomp my feet — STOMP! STOMP! STOMP!
+Now I take a breath... (breathe in)
+And let it out... (breathe out)`
+    },
+    es: {
+      title: "Oso Pardo Gruñón",
+      ageLabel: "2-3 años",
+      milestones: ["Autonomía", "Integración de Afecto Positivo y Negativo"],
+      description: "Expresa el enojo de forma segura; patea el suelo y luego respiren juntos.",
+      lyrics: `Soy un oso pardo — ¡GRR, GRR, GRR!
+Cuando me enojo, pisoteo — ¡PUM, PUM, PUM!
+Ahora respiro hondo... (inhala)
+Y lo suelto... (exhala)`
+    }
+  }
+];
+
+/* =================== Helpers =================== */
+const $  = (sel, root=document) => root.querySelector(sel);
+const $$ = (sel, root=document) => Array.from(root.querySelectorAll(sel));
+function escapeRegExp(str){
+  return String(str).replace(/[.*+?^${}()|[\]\\]/g, '\$&');
+} // critical fix
+function highlight(text, term){
+  if (!term || !text) return text;
+  const re = new RegExp(`(${escapeRegExp(term)})`, 'ig');
+  return String(text).replace(re, '<mark class="highlight">$1</mark>');
+}
+function getSongData(song){
+  // supports either nested {en,es} or flat fields
+  const d = (UI_LANG==='es' && song.es) ? song.es : (song.en || song);
+  return {
+    title: d.title || '',
+    ageLabel: d.ageLabel || song.ageLabel || '',
+    milestones: d.milestones || song.milestones || [],
+    description: d.description || song.description || '',
+    lyrics: d.lyrics || song.lyrics || ''
+  };
+}
+
+/* =================== Static text =================== */
+function setStaticText(){
+  document.documentElement.lang = UI_LANG;
+  $$('[data-t]').forEach(el => { el.textContent = t(el.getAttribute('data-t')); });
+  $$('[data-t-placeholder]').forEach(el => { el.placeholder = t(el.getAttribute('data-t-placeholder')); });
+  document.title = t('title');
+  const notice = $("#langNotice");
+  if (notice){
+    if (UI_LANG==='es'){ notice.style.display='block'; notice.textContent=t('esBanner'); }
+    else { notice.style.display='none'; notice.textContent=''; }
+  }
+}
+
+/* =================== Render =================== */
+function songCardHTML(song, term=""){
+  const s = getSongData(song);
+  const tagClasses = {
+    calming:'tag-sensory', quiet:'tag-sensory', bedtime:'tag-sensory',
+    movement:'tag-movement', adventure:'tag-movement', energizing:'tag-movement',
+    feelings:'tag-emotional', anger:'tag-emotional', affirmations:'tag-emotional',
+    group:'tag-social', echo:'tag-social', cooperation:'tag-social',
+    learning:'tag-language', 'español':'tag-language', tradicional:'tag-language'
+  };
+  const tagHtml = (song.tags||[]).map(tag=>`<span class="tag ${(tagClasses[tag]||'tag-language')}">${tag}</span>`).join('');
+  const langBadge = (song.lang||[]).map(l=>l.toUpperCase()).join(', ');
+  const links = (song.links||[]).map(l=>{
+    const cls = l.type==='video' ? 'btn-video' : (l.type==='lyrics' ? 'btn-lyrics' : 'btn-print');
+    const label = l.type==='video' ? t('watchVideo') : (l.label||'Link');
+    return `<a class="action-btn ${cls}" target="_blank" rel="noopener" href="${l.url}">${label}</a>`;
+  }).join('');
+  const milestones = (s.milestones||[]).map(m=>`<span class="milestone-item">${highlight(m, term)}</span>`).join('');
+
+  return `
+  <article class="song-card" id="${song.id}"
+           data-age="${song.age}"
+           data-lang="${(song.lang||[]).join(',')}"
+           data-purpose="${(song.purpose||[]).join(',')}"
+           data-tags="${(song.tags||[]).join(',')}">
+    <div class="song-header">
+      <h3 class="song-title">${highlight(s.title, term)} <span class="badge-lang">${langBadge}</span></h3>
+      <span class="song-age-badge">${s.ageLabel}</span>
+    </div>
+    <div class="song-description">${highlight(s.description, term)}</div>
+    <div class="milestone-box">
+      <h4>${t('erp_milestones')}</h4>
+      <div class="milestone-list">${milestones}</div>
+    </div>
+    <div class="song-tags">${tagHtml}</div>
+    <div class="action-row">${links}</div>
+    <details class="lyrics">
+      <summary>${t('showLyrics')}</summary>
+      <div class="lyrics-content"><pre style="white-space:pre-wrap;margin:0">${highlight(s.lyrics, term)}</pre></div>
+    </details>
+  </article>`;
+}
+
+function renderLists(term=""){
+  const lists = { infants:'', 'young-toddlers':'', 'older-toddlers':'', preschool:'' };
+  const filtered = SONGS.filter(s => SONG_LANG_FILTER==='all' || (s.lang||[]).includes(SONG_LANG_FILTER));
+  filtered.forEach(song => { if (lists[song.age] !== undefined) lists[song.age] += songCardHTML(song, term); });
+
+  const empty = `<div class="empty-state">${t('noSongsMsg')}</div>`;
+  $("#infantsList").innerHTML   = lists['infants']        || empty;
+  $("#youngList").innerHTML     = lists['young-toddlers'] || empty;
+  $("#olderList").innerHTML     = lists['older-toddlers'] || empty;
+  $("#preschoolList").innerHTML = lists['preschool']      || empty;
+}
+
+function renderQuickIndex(term=""){
+  const purpose = $("#purposeFilter")?.value || 'all';
+  const langFilter = $("#langFilter")?.value || 'all';
+  const termLC = term.toLowerCase();
+
+  const buckets = {
+    [t('purpose_calming')]:   s => (s.purpose||[]).includes('calming'),
+    [t('purpose_energizing')]:s => (s.purpose||[]).includes('energizing'),
+    [t('purpose_social')]:    s => (s.purpose||[]).includes('social'),
+    [t('purpose_learning')]:  s => (s.purpose||[]).includes('learning'),
+    [t('purpose_emotional')]: s => (s.purpose||[]).includes('emotional')
+  };
+
+  const filtered = SONGS.filter(s => {
+    const cardLangs = (s.lang||[]);
+    const matchesGlobalLang = SONG_LANG_FILTER==='all' || cardLangs.includes(SONG_LANG_FILTER);
+    const matchesLang = (langFilter==='all') || cardLangs.includes(langFilter) || (langFilter==='bilingual' && cardLangs.includes('bilingual'));
+    const matchesPurpose = (purpose==='all') || (s.purpose||[]).includes(purpose);
+    const dataText = JSON.stringify(getSongData(s)).toLowerCase() + ' ' + (s.tags||[]).join(' ').toLowerCase();
+    const matchesTerm = !termLC || dataText.includes(termLC);
+    return matchesGlobalLang && matchesLang && matchesPurpose && matchesTerm;
+  });
+
+  const html = Object.entries(buckets).map(([label, fn])=>{
+    const items = filtered.filter(fn);
+    if (!items.length) return '';
+    return `
+      <div class="index-item">
+        <div class="index-title">${label}</div>
+        <div class="index-songs">
+          ${items.map(s=>{
+            const sd = getSongData(s);
+            return `<a href="#${s.id}" data-jump="${s.id}">🎵 ${sd.title}</a>`;
+          }).join('')}
+        </div>
+      </div>`;
+  }).join('');
+
+  $("#quickIndex").innerHTML = html || `<div class="empty-state">${t('noSongsMsg')}</div>`;
+}
+
+/* =================== Filters =================== */
+function applyFilters(){
+  const purpose = $("#purposeFilter").value;
+  const lang    = $("#langFilter").value;
+  const term    = ($("#searchInput").value||"").trim().toLowerCase();
+
+  let visible = 0;
+  $$(".song-card").forEach(card=>{
+    const cardPurposes = (card.getAttribute("data-purpose")||"").split(",");
+    const cardLangs    = (card.getAttribute("data-lang")||"").split(",");
+    const text         = card.textContent.toLowerCase();
+
+    const matchPurpose = (purpose==='all') || cardPurposes.includes(purpose);
+    const matchLang    = (lang==='all') || cardLangs.includes(lang) || (lang==='bilingual' && cardLangs.includes('bilingual'));
+    const matchTerm    = !term || text.includes(term);
+
+    const show = matchPurpose && matchLang && matchTerm;
+    card.style.display = show ? "" : "none";
+    if (show) visible++;
+  });
+
+  const status = $("#resultsStatus");
+  if (status) status.textContent = `${visible} song${visible===1?'':'s'} shown.`;
+  renderQuickIndex(term);
+  updateEmptyStates();
+}
+
+function updateEmptyStates(){
+  ['infantsList','youngList','olderList','preschoolList'].forEach(id=>{
+    const list = document.getElementById(id);
+    if (!list) return;
+    const cards = Array.from(list.querySelectorAll('.song-card')).filter(c=>c.style.display !== 'none');
+    let empty = list.querySelector('.empty-state');
+    if (cards.length === 0){
+      if (!empty){
+        empty = document.createElement('div');
+        empty.className = 'empty-state';
+        empty.textContent = t('noSongsMsg');
+        list.appendChild(empty);
+      } else {
+        empty.style.display = '';
+        empty.textContent = t('noSongsMsg');
+      }
+    } else if (empty){
+      empty.remove();
+    }
+  });
+}
+
+/* =================== Tabs & nav =================== */
+function activateSection(id){
+  $$(".section").forEach(sec => sec.classList.toggle("active", sec.id === id));
+  $$("#ageTabs .nav-btn").forEach(btn=>{
+    const on = btn.getAttribute("aria-controls")===id;
+    btn.setAttribute("aria-selected", String(on));
+    btn.setAttribute("aria-current",  String(on));
+  });
+}
+
+function bindTabs(){
+  $$("#ageTabs .nav-btn").forEach(btn=>{
+    if (btn.___bound) return;
+    btn.addEventListener("click", ()=>{
+      const id = btn.getAttribute("aria-controls");
+      if (id) activateSection(id);
+    });
+    btn.___bound = true;
+  });
+
+  // keyboard nav
+  const container = $("#ageTabs");
+  if (container && !container.___keys){
+    container.addEventListener("keydown",(e)=>{
+      const tabs = $$("#ageTabs .nav-btn");
+      const i = tabs.findIndex(b => b.getAttribute("aria-current")==="true");
+      const go = (idx)=>{ tabs[idx]?.focus(); tabs[idx]?.click(); };
+      if (e.key==="ArrowRight"){ e.preventDefault(); go((i+1)%tabs.length); }
+      if (e.key==="ArrowLeft"){  e.preventDefault(); go((i-1+tabs.length)%tabs.length); }
+      if (e.key==="Home"){       e.preventDefault(); go(0); }
+      if (e.key==="End"){        e.preventDefault(); go(tabs.length-1); }
+    });
+    container.___keys = true;
+  }
+}
+
+/* =================== Quick Index & Quick Start =================== */
+function bindQuickIndex(){
+  const qi = $("#quickIndex");
+  if (!qi || qi.___bound) return;
+  qi.addEventListener("click",(e)=>{
+    const link = e.target.closest("a[data-jump]");
+    if (!link) return;
+    e.preventDefault();
+    const songId = link.getAttribute("data-jump");
+    const song = SONGS.find(s=>s.id===songId);
+    if (!song) return;
+    activateSection(song.age);
+    setTimeout(()=>{
+      const card = document.getElementById(songId);
+      (card ?? document.getElementById(song.age))?.scrollIntoView({behavior:"smooth", block:"center"});
+      if (card){
+        card.style.outline='3px solid #8b4513';
+        setTimeout(()=>{ card.style.outline='none'; }, 900);
+      }
+    }, 60);
+  });
+  qi.___bound = true;
+}
+
+function bindQuickStart(){
+  $$(".quick-btn").forEach(btn=>{
+    if (btn.___bound) return;
+    btn.addEventListener("click", ()=>{
+      const key = btn.getAttribute("data-qf");
+      const map = { calming:'calming', movement:'energizing', group:'social', bedtime:'calming', feelings:'emotional', morning:'learning' };
+      $("#purposeFilter").value = map[key] || 'all';
+      $("#searchInput").value = "";
+      $("#langFilter").value = "all";
+      $("#songLang").value = "all";
+      SONG_LANG_FILTER = "all";
+      activateSection("quick-index");
+      renderLists("");
+      applyFilters();
+      $("#main").scrollIntoView({behavior:"smooth"});
+    });
+    btn.___bound = true;
+  });
+}
+
+/* =================== App render & boot =================== */
+function renderApp(){
+  setStaticText();
+  const term = $("#searchInput")?.value || "";
+  renderLists(term);
+  applyFilters();
+  bindTabs();
+  bindQuickIndex();
+  bindQuickStart();
+}
+
+function openFromHash(){
+  const id = (location.hash||'').slice(1);
+  if (!id) return;
+  const song = SONGS.find(s=>s.id===id);
+  if (!song) return;
+  activateSection(song.age);
+  setTimeout(()=>{
+    const card = document.getElementById(id);
+    if (card){
+      card.scrollIntoView({behavior:"smooth", block:"center"});
+      card.style.outline='3px solid #8b4513';
+      setTimeout(()=>{ card.style.outline='none'; }, 900);
+    }
+  }, 60);
+}
+
+document.addEventListener("DOMContentLoaded", ()=>{
+  // wire controls
+  $("#uiLang")?.addEventListener("change", (e)=>{ UI_LANG = e.target.value; renderApp(); });
+  $("#songLang")?.addEventListener("change", (e)=>{ SONG_LANG_FILTER = e.target.value; renderApp(); });
+  $("#purposeFilter")?.addEventListener("change", applyFilters);
+  $("#langFilter")?.addEventListener("change", applyFilters);
+  let tmo;
+  $("#searchInput")?.addEventListener("input", ()=>{
+    clearTimeout(tmo);
+    tmo = setTimeout(()=>{ renderLists($("#searchInput").value); applyFilters(); }, 220);
+  });
+
+  renderApp();
+  openFromHash();
+  window.addEventListener("hashchange", openFromHash);
+});
+</script>
+</body>
+</html>
