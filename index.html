@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>QUEER HACK++ // SIGNAL OF TOMORROW</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=VT323&family=Press+Start+2P&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:#090714; --panel:#15102a; --ink:#f4f7ff; --pink:#ff71ce; --cyan:#01cdfe; --violet:#b967db; --green:#68ff8a;
+      --danger:#ff5e7e; --gold:#ffd166;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{height:100%;background:radial-gradient(circle at 20% 0,#1f1135,var(--bg) 60%);color:var(--ink);font-family:'VT323',monospace;overflow:hidden}
+    .crt::before{content:"";position:fixed;inset:0;pointer-events:none;background:linear-gradient(rgba(255,255,255,.02),rgba(255,255,255,0) 2px);background-size:100% 4px;mix-blend-mode:screen;opacity:.25;z-index:9999}
+    #app{height:100%;display:grid;grid-template-rows:auto 1fr auto;gap:10px;padding:10px}
+    .hud,.controls,.log{background:linear-gradient(135deg,rgba(185,103,219,.16),rgba(1,205,254,.12));border:1px solid rgba(1,205,254,.5);box-shadow:0 0 16px rgba(1,205,254,.2)}
+    .hud{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:8px;padding:8px;align-items:center}
+    .stat{padding:6px;border:1px solid rgba(255,255,255,.2);background:rgba(0,0,0,.3)}
+    .label{color:var(--cyan);font-size:14px}.value{font-size:26px;line-height:1}
+    #main{display:grid;grid-template-columns:1fr 320px;gap:10px;min-height:0}
+    #viewportWrap{position:relative;background:#05040a;border:2px solid var(--cyan);display:flex;align-items:center;justify-content:center}
+    #game{width:100%;height:100%;image-rendering:pixelated}
+    #chapterBanner{position:absolute;top:8px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.75);border:1px solid var(--pink);padding:4px 10px;color:var(--pink);display:none}
+    .log{padding:8px;display:flex;flex-direction:column;min-height:0}
+    #messages{overflow:auto;flex:1;border:1px solid rgba(255,255,255,.15);padding:6px;background:rgba(0,0,0,.28)}
+    .msg{margin-bottom:4px;font-size:20px}.special{color:var(--pink)}.good{color:var(--green)}.warn{color:var(--danger)}.info{color:var(--cyan)}
+    #quest{margin-bottom:8px;padding:6px;border:1px solid rgba(255,113,206,.5);background:rgba(255,113,206,.08)}
+    .controls{padding:8px;display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:14px}
+    .dpad{position:relative;width:130px;height:95px}
+    .btn{position:absolute;width:42px;height:32px;border:1px solid var(--pink);background:rgba(255,113,206,.18);color:var(--ink);font-size:20px;border-radius:8px}
+    #u{top:0;left:44px}#d{bottom:0;left:44px}#l{left:0;top:31px}#r{right:0;top:31px}
+    .actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+    .action{border:1px solid var(--cyan);background:rgba(1,205,254,.16);padding:8px 12px;color:var(--ink);font-size:20px;border-radius:8px}
+    #help{font-size:18px;color:#b2dfff}
+    #overlay{position:fixed;inset:0;background:rgba(0,0,0,.86);display:none;align-items:center;justify-content:center;z-index:1000;padding:14px}
+    #overlay .card{max-width:700px;width:100%;background:var(--panel);border:2px solid var(--pink);padding:16px}
+    #overlay h2{font-family:'Press Start 2P',monospace;font-size:16px;color:var(--pink);margin-bottom:12px;line-height:1.4}
+    #overlay p{font-size:24px;line-height:1.25;margin-bottom:10px}
+    #overlay button{font-size:22px;padding:6px 12px;border:1px solid var(--cyan);background:#000;color:var(--cyan)}
+    @media (max-width:1000px){#main{grid-template-columns:1fr}.hud{grid-template-columns:1fr 1fr}.log{max-height:230px}}
+  </style>
+</head>
+<body class="crt">
+<div id="app">
+  <div class="hud">
+    <div class="stat"><div class="label">Agent</div><div class="value">SKYLAR // <span id="hp"></span></div></div>
+    <div class="stat"><div class="label">Chapter</div><div class="value" id="depth">1</div></div>
+    <div class="stat"><div class="label">Archives</div><div class="value"><span id="archives">0</span>/16</div></div>
+    <div class="stat"><div class="label">Allies</div><div class="value"><span id="allies">0</span>/8</div></div>
+  </div>
+  <div id="main">
+    <div id="viewportWrap">
+      <canvas id="game" width="960" height="600"></canvas>
+      <div id="chapterBanner"></div>
+    </div>
+    <div class="log">
+      <div id="quest">Objective: reboot the Liberation Broadcast across 8 chapters.</div>
+      <div id="messages"></div>
+    </div>
+  </div>
+  <div class="controls">
+    <div class="dpad">
+      <button class="btn" id="u">↑</button><button class="btn" id="d">↓</button><button class="btn" id="l">←</button><button class="btn" id="r">→</button>
+    </div>
+    <div id="help">WASD/Arrows move • E interact • Q dash (2 tiles) • F pulse scan • H toggle high contrast</div>
+    <div class="actions">
+      <button class="action" id="act">USE</button>
+      <button class="action" id="dash">DASH</button>
+      <button class="action" id="scan">SCAN</button>
+    </div>
+  </div>
+</div>
+
+<div id="overlay"><div class="card"><h2 id="ovTitle"></h2><p id="ovBody"></p><button id="ovBtn">Continue</button></div></div>
+
+<script>
+const CHAPTERS = [
+  {name:'1930: Underground Print Rooms', text:'You wake inside the print-room catacombs. Recover banned zines before censors burn them.'},
+  {name:'1966: Street Queens Rising', text:'Community kitchens and night shelters become resistance hubs. Protect people, not property.'},
+  {name:'1969: Stonewall Echo', text:'The dungeon shakes with revolt. Every page recovered is a spark.'},
+  {name:'1980s: Mutual Aid Networks', text:'Care is strategy. Medkits and chosen family keep you alive.'},
+  {name:'1990s: Clinic Corridors', text:'Fight for care access and informed consent against hostile systems.'},
+  {name:'2000s: Name Change Servers', text:'Reclaim identity records from bureaucratic labyrinths.'},
+  {name:'2010s: Digital Organizing', text:'Algorithms try to silence joy. Build signal strength, find your people.'},
+  {name:'2025: Liberation Broadcast', text:'All archives and ancestors unite. Push the final broadcast live.'}
+];
+const ALLIES = ['Eleanor','Charley','Alan','Dora','Lili','Christine','Marsha','Sylvia'];
+const game = {
+  w:52,h:34,vw:24,vh:15,cell:40,depth:1,hp:5,maxHp:5,archives:0,allies:0,alive:true,
+  dashCd:0,scanCd:0,map:{},seen:{},player:{x:3,y:3},items:[],npcs:[],enemies:[],broadcastReady:false,
+  canvas:null,ctx:null
+};
+const el = id=>document.getElementById(id);
+const msg=(t,c='')=>{const d=document.createElement('div');d.className='msg '+c;d.textContent=t;el('messages').appendChild(d);el('messages').scrollTop=99999;while(el('messages').children.length>32)el('messages').firstChild.remove();}
+const tile=(x,y)=>game.map[`${x},${y}`]||'#';
+const setTile=(x,y,v)=>game.map[`${x},${y}`]=v;
+const pass=(x,y)=>x>=0&&y>=0&&x<game.w&&y<game.h&&['.','>','B'].includes(tile(x,y));
+function heal(n){game.hp=Math.min(game.maxHp,game.hp+n);}
+function damage(n,text='A hunter slashes through your signal.'){game.hp-=n;msg(text,'warn');if(game.hp<=0){game.alive=false;show('Signal Lost','The network goes dark. Restart and reconnect the movement.',()=>location.reload());}sync();}
+function sync(){el('hp').textContent='♥'.repeat(game.hp)+'♡'.repeat(game.maxHp-game.hp);el('depth').textContent=game.depth;el('archives').textContent=game.archives;el('allies').textContent=game.allies;el('quest').textContent=`Objective: ${game.depth<8?'Reach the uplink (>) while recovering archives and allies.':'Activate final broadcast at [B].'}  Dash:${game.dashCd} Scan:${game.scanCd}`;}
+function show(title,body,cb){el('ovTitle').textContent=title;el('ovBody').textContent=body;el('overlay').style.display='flex';el('ovBtn').onclick=()=>{el('overlay').style.display='none';cb&&cb();};}
+function newLevel(){
+  game.map={};game.items=[];game.npcs=[];game.enemies=[];game.seen={};
+  for(let y=0;y<game.h;y++)for(let x=0;x<game.w;x++)setTile(x,y,'#');
+  const rooms=[];
+  for(let i=0;i<12;i++){
+    const rw=5+Math.floor(Math.random()*8), rh=4+Math.floor(Math.random()*6), rx=1+Math.floor(Math.random()*(game.w-rw-2)), ry=1+Math.floor(Math.random()*(game.h-rh-2));
+    if(rooms.some(r=>rx<r.x+r.w+1&&rx+rw+1>r.x&&ry<r.y+r.h+1&&ry+rh+1>r.y))continue;
+    rooms.push({x:rx,y:ry,w:rw,h:rh});
+    for(let y=ry;y<ry+rh;y++)for(let x=rx;x<rx+rw;x++)setTile(x,y,'.');
+  }
+  for(let i=1;i<rooms.length;i++){
+    const a=rooms[i-1],b=rooms[i],ax=(a.x+a.w/2)|0,ay=(a.y+a.h/2)|0,bx=(b.x+b.w/2)|0,by=(b.y+b.h/2)|0;
+    for(let x=Math.min(ax,bx);x<=Math.max(ax,bx);x++)setTile(x,ay,'.');
+    for(let y=Math.min(ay,by);y<=Math.max(ay,by);y++)setTile(bx,y,'.');
+  }
+  const start=rooms[0]||{x:2,y:2,w:4,h:4};game.player.x=(start.x+start.w/2)|0;game.player.y=(start.y+start.h/2)|0;
+  if(game.depth<8){const end=rooms[rooms.length-1];setTile((end.x+end.w/2)|0,(end.y+end.h/2)|0,'>');}
+  else {const end=rooms[rooms.length-1];setTile((end.x+end.w/2)|0,(end.y+end.h/2)|0,'B');}
+
+  const free=()=>{for(let tries=0;tries<1000;tries++){const r=rooms[1+Math.floor(Math.random()*(rooms.length-2||1))]||start;const x=r.x+1+Math.floor(Math.random()*Math.max(1,r.w-2)),y=r.y+1+Math.floor(Math.random()*Math.max(1,r.h-2));if(pass(x,y)&&!game.items.find(i=>i.x===x&&i.y===y)&&!game.npcs.find(n=>n.x===x&&n.y===y)&&!game.enemies.find(e=>e.x===x&&e.y===y))return{x,y};}return{x:game.player.x+1,y:game.player.y};};
+
+  for(let i=0;i<2;i++){const p=free();game.items.push({x:p.x,y:p.y,t:'archive',glyph:'"',color:'#ff71ce'});}
+  for(let i=0;i<2;i++){const p=free();game.items.push({x:p.x,y:p.y,t:'med',glyph:'✚',color:'#68ff8a'});}
+  const allyIdx=(game.depth-1)%ALLIES.length;const pAlly=free();game.npcs.push({x:pAlly.x,y:pAlly.y,name:ALLIES[allyIdx],dialog:[`I'm ${ALLIES[allyIdx]}.`,`Our stories are not relics; they are instructions for survival.`,`Take this signal key and keep moving.`]});
+
+  const enemyCount=2+game.depth;
+  for(let i=0;i<enemyCount;i++){const p=free();game.enemies.push({x:p.x,y:p.y,type:i%2?'drone':'hunter',hp:1,stun:0,cool:Math.floor(Math.random()*2)});}
+
+  const ch=CHAPTERS[game.depth-1];banner(ch.name);show(ch.name,ch.text,()=>{msg(ch.text,'info');});
+  reveal();sync();draw();
+}
+function banner(text){const b=el('chapterBanner');b.textContent=text;b.style.display='block';setTimeout(()=>b.style.display='none',2800);}
+function reveal(r=5){for(let y=-r;y<=r;y++)for(let x=-r;x<=r;x++){const mx=game.player.x+x,my=game.player.y+y;if(mx>=0&&my>=0&&mx<game.w&&my<game.h&&(x*x+y*y)<=r*r)game.seen[`${mx},${my}`]=true;}}
+function pickup(){
+  const i=game.items.find(o=>o.x===game.player.x&&o.y===game.player.y);
+  if(!i)return;
+  if(i.t==='archive'){game.archives++;msg('Archive recovered. Memory turns into momentum.','special');}
+  if(i.t==='med'){const before=game.hp;heal(2);msg(before===game.hp?'Medkit logged (already full).':'Medkit used. Community care works.','good');}
+  game.items=game.items.filter(o=>o!==i);sync();
+}
+function interact(){
+  if(!game.alive)return;
+  const npc=game.npcs.find(n=>n.x===game.player.x&&n.y===game.player.y);
+  if(npc){game.allies++;const lines=[...npc.dialog,`+1 Ally linked (${game.allies}/8).`];game.npcs=[];show(npc.name,lines.join('\n'),()=>msg(`${npc.name} joined your network.`,'good'));sync();return;}
+  const t=tile(game.player.x,game.player.y);
+  if(t==='>'){game.depth++;if(game.depth>8){game.depth=8;}newLevel();return;}
+  if(t==='B'){
+    if(game.archives>=16&&game.allies>=8){show('Liberation Broadcast ONLINE','You rebuilt a living archive powered by care, rage, joy, and solidarity. The signal spreads city to city.',()=>msg('Victory. Keep organizing offline too.','special'));}
+    else msg('Final uplink locked. Need all 16 archives and all 8 allies.','warn');
+    return;
+  }
+  msg('Nothing to activate here.','info');
+}
+function tryMove(dx,dy){
+  if(!game.alive)return;
+  if(game.dashCd>0)game.dashCd--;if(game.scanCd>0)game.scanCd--;
+  const nx=game.player.x+dx,ny=game.player.y+dy;
+  if(!pass(nx,ny)){msg('Blocked route.','info');return;}
+  const hit=game.enemies.find(e=>e.x===nx&&e.y===ny);
+  if(hit){damage(1,'You collide with a hostile patrol.');return;}
+  game.player.x=nx;game.player.y=ny;reveal();pickup();enemyTurn();draw();sync();
+}
+function dash(dx,dy){
+  if(game.dashCd>0){msg('Dash cooling down.','warn');return;}
+  const nx=game.player.x+dx*2,ny=game.player.y+dy*2;
+  if(!pass(nx,ny)){msg('Dash path obstructed.','warn');return;}
+  game.player.x=nx;game.player.y=ny;game.dashCd=4;msg('Burst movement!','good');
+  game.enemies.forEach(e=>{if(Math.abs(e.x-game.player.x)+Math.abs(e.y-game.player.y)<=1)e.stun=2;});
+  reveal(6);pickup();enemyTurn();draw();sync();
+}
+function scan(){if(game.scanCd>0){msg('Scan cooling down.','warn');return;}game.scanCd=6;reveal(8);msg('Pulse scan reveals nearby rooms.','info');draw();sync();}
+function enemyTurn(){
+  for(const e of game.enemies){
+    if(e.stun>0){e.stun--;continue;}
+    e.cool^=1;if(e.cool)return;
+    let dx=0,dy=0;const md=Math.abs(game.player.x-e.x)+Math.abs(game.player.y-e.y);
+    if(md<7){if(Math.abs(game.player.x-e.x)>Math.abs(game.player.y-e.y))dx=game.player.x>e.x?1:-1;else dy=game.player.y>e.y?1:-1;}
+    else {const opts=[[1,0],[-1,0],[0,1],[0,-1]];[dx,dy]=opts[Math.floor(Math.random()*opts.length)];}
+    const nx=e.x+dx,ny=e.y+dy;
+    if(pass(nx,ny)&&!game.enemies.find(o=>o!==e&&o.x===nx&&o.y===ny)){e.x=nx;e.y=ny;}
+    if(e.x===game.player.x&&e.y===game.player.y)damage(1,e.type==='drone'?'A surveillance drone tags your position.':'A hunter tears through your line.');
+  }
+}
+function draw(){
+  const c=game.ctx,cv=game.canvas; c.clearRect(0,0,cv.width,cv.height);
+  const left=Math.max(0,Math.min(game.w-game.vw,game.player.x-(game.vw>>1))), top=Math.max(0,Math.min(game.h-game.vh,game.player.y-(game.vh>>1)));
+  c.font='28px VT323';c.textAlign='center';c.textBaseline='middle';
+  for(let y=0;y<game.vh;y++)for(let x=0;x<game.vw;x++){
+    const mx=left+x,my=top+y,key=`${mx},${my}`;const seen=game.seen[key];if(!seen)continue;
+    const t=tile(mx,my),px=x*game.cell,py=y*game.cell;
+    c.fillStyle=t==='#'?'#1a1430':'#2d243f';c.fillRect(px,py,game.cell,game.cell);
+    c.globalAlpha=(Math.abs(mx-game.player.x)+Math.abs(my-game.player.y)<=6)?1:.35;
+    if(t==='#'){c.strokeStyle='#3c2859';c.strokeRect(px+1,py+1,game.cell-2,game.cell-2);}
+    if(t==='>'){c.fillStyle='#01cdfe';c.fillText('>',px+20,py+20);} if(t==='B'){c.fillStyle='#ffd166';c.fillText('B',px+20,py+20);} c.globalAlpha=1;
+  }
+  const paint=(arr,glyph,color)=>arr.forEach(o=>{if(o.x<left||o.y<top||o.x>=left+game.vw||o.y>=top+game.vh||!game.seen[`${o.x},${o.y}`])return;game.ctx.fillStyle=o.color||color;game.ctx.fillText(o.glyph||glyph,(o.x-left)*game.cell+20,(o.y-top)*game.cell+20);});
+  paint(game.items,'*','#fff'); paint(game.npcs,'A','#5bcefa'); paint(game.enemies,'X','#ff5e7e');
+  c.fillStyle='#68ff8a'; c.fillText('@',(game.player.x-left)*game.cell+20,(game.player.y-top)*game.cell+20);
+}
+function bindHold(id,fn){let t;const b=el(id);const start=()=>{fn();t=setInterval(fn,120)};const stop=()=>clearInterval(t);['mousedown','touchstart'].forEach(e=>b.addEventListener(e,s=>{s.preventDefault();start();}));['mouseup','mouseleave','touchend','touchcancel'].forEach(e=>b.addEventListener(e,stop));}
+function boot(){
+  game.canvas=el('game');game.ctx=game.canvas.getContext('2d');
+  bindHold('u',()=>tryMove(0,-1));bindHold('d',()=>tryMove(0,1));bindHold('l',()=>tryMove(-1,0));bindHold('r',()=>tryMove(1,0));
+  el('act').onclick=interact;el('dash').onclick=()=>dash(1,0);el('scan').onclick=scan;
+  document.addEventListener('keydown',e=>{
+    const m={ArrowUp:[0,-1],KeyW:[0,-1],ArrowDown:[0,1],KeyS:[0,1],ArrowLeft:[-1,0],KeyA:[-1,0],ArrowRight:[1,0],KeyD:[1,0]};
+    if(m[e.code]){e.preventDefault();tryMove(...m[e.code]);}
+    if(['KeyE','Space','Enter'].includes(e.code)){e.preventDefault();interact();}
+    if(e.code==='KeyQ'){e.preventDefault();const d=m[window.lastDir||'ArrowRight']||[1,0];dash(...d);} if(m[e.code])window.lastDir=e.code;
+    if(e.code==='KeyF'){e.preventDefault();scan();}
+    if(e.code==='KeyH')document.body.classList.toggle('high-contrast');
+  });
+  msg('QUEER HACK++ rebooted. Build power through memory + solidarity.','special');
+  newLevel();
+}
+window.addEventListener('DOMContentLoaded',boot);
+</script>
+</body>
+</html>
